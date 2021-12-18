@@ -51,6 +51,10 @@ if (argc > 1) // blocks the programm if there are no entered arguments
         {
             std::cout << "Maximum value: " << maximum_value << std::endl;
         }
+        else
+        {
+            std::cout << std::endl;
+        }
     }
 }
 else
