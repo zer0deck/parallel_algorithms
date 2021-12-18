@@ -32,7 +32,7 @@ if (argc > 1) // blocks the programm if there are no entered arguments
         double maximum_value = -1.0; 
         auto time_start = std::chrono::high_resolution_clock::now(); // c.time
 
-#pragma omp parallel for num_threads(thread_num) reduction (max:maximum_value)
+#pragma omp parallel for reduction(max:maximum_value) num_threads(thread_num)
 
         for (auto i = 0; i < vec_size; i++)
         {
