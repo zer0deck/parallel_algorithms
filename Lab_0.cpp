@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 
     if (argc < 2)
     {
-        std::cout << "No argument passed" << std::endl;
+        std::cout << "You hadn't entered any text" << std::endl;
         return 1;
     }
 
@@ -20,8 +20,8 @@ int main(int argc, char** argv)
     {
         new_symb = string[i];
 
-        if (!((prev_symb == ' ') or (prev_symb == '\t') or (prev_symb == '\n')) and
-            ((new_symb == ' ') or (new_symb == '\t') or (new_symb == '\n') or (new_symb == '\0')))
+        if (!((prev_symb == ' ') || (prev_symb == '\t') || (prev_symb == '\n')) &&
+            ((new_symb == ' ') || (new_symb == '\t') || (new_symb == '\n') || (new_symb == '\0')))
         {
             w_num++;
         }
@@ -29,6 +29,6 @@ int main(int argc, char** argv)
         i++;
     }
 
-    std::cout << "Number of words:" << w_num << std::endl;
+    std::cout << "The sentence has: " << w_num << " words" << std::endl;
     return 0;
 }
