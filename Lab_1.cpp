@@ -1,27 +1,34 @@
-#include <ctype.h>
-#include <stdio.h>
-#include <openmp/omp.h>
-#include <string.h>
+#include <iostream>
+#include <omp.h>
 
-int main(int argc, char *argv[]) {
-  int i = 0;
-  int state = (isspace(argv[1][0]) > 0);
-  int answer = 0;
-  if (!state)
-    answer += 1;
-  char cur;
-  while (i < strlen(argv[1])) {
-    if (isspace(argv[1][i]) && !state) {
-      state = 1;
-    } else if (!isspace(argv[1][i]) && state) {
-      state = 0;
-      answer += 1;
+int main(int argc, char** argv)
+{
+    unsigned w_num = 0;
+    char*       string = argv[1];
+    char        new_symb, prev_symb;
+    unsigned    i = 1;
+
+    if (argc < 2)
+    {
+        std::cout << "No argument passed" << std::endl;
+        return 1;
     }
-    i += 1;
-  }
-  // for (i = 0; i < strlen(argv[1]); i++) {
-  //   answer += (isspace(argv[1][i]) > 0);
-  // }
 
-  printf("Num words in %s = %d\n", argv[1], answer);
+    prev_symb = new_symb = string[0];
+
+    while (new_symb != '\0')
+    {
+        new_symb = string[i];
+
+        if (!((prev_symb == ' ') or (prev_symb == '\t') or (prev_symb == '\n')) and
+            ((new_symb == ' ') or (new_symb == '\t') or (new_symb == '\n') or (new_symb == '\0')))
+        {
+            w_num++;
+        }
+        prev_symb = new_symb;
+        i++;
+    }
+
+    std::cout << "Number of words:" << w_num << std::endl;
+    return 0;
 }
