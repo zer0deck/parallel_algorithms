@@ -1,25 +1,34 @@
 #include <iostream>
 #include "mpi.h"
-#define NTIMES 100
 
 using namespace std;
 
-int main(int argc, char **argv)
+int main(int argc, char* argv[])
 {
-	double time_start, time_finish;
-	int rank, i;
-	int len;
-	char *name = new char;
-
 	MPI_Init(&argc, &argv);
+	int rank, n, i, message;
+    double time_start, time_finish;
+	MPI_Status status;
+	MPI_Comm_size(MPI_COMM_WORLD, &n);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	MPI_Get_processor_name(name, &len);
-	time_start = MPI_Wtime();
 
-	for (i = 0; i < NTIMES; i++)
+    int src = rank - 1;
+    int dst = rank + 1;
+
+    time_start = MPI_Wtime();
+
+	if (rank == 7)
+	{
+		cout << "Hello from process " << rank << "\n";
+		for (i = 1; i < n; i++) {
+			MPI_Recv(&message, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+			cout << "Hello from process " << double(message) / 7 << endl;
+
+		}
 		time_finish = MPI_Wtime();
-	
-	cout << "processor " << name << ", process " << rank << "time = " << (time_finish - time_start) / NTIMES << endl;
-	MPI_Finalize();
+    	cout << "Process: " << rank << "  time: " << (time_finish - time_start) << endl;
+	}
 
+	MPI_Finalize();
+	return 0;
 }
