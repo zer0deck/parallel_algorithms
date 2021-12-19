@@ -26,10 +26,8 @@ int main(int argc, char* argv[])
 				time_finish = MPI_Wtime();
 				cout<< "Time = " << (time_finish - time_start) << endl;
 			}
-
 		}
 		else MPI_Send(&rank, 1, MPI_INT, 7, 0, MPI_COMM_WORLD);
-
 
 	MPI_Finalize();
 	return 0;
