@@ -23,10 +23,10 @@ int main(int argc, char* argv[])
 		for (i = 1; i < n; i++) {
 			MPI_Recv(&message, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 			cout << "Hello from process " << double(message) / 7 << endl;
-
+			time_finish = MPI_Wtime();
+    		cout << "time: " << (time_finish - time_start) << endl;
 		}
-		time_finish = MPI_Wtime();
-    	cout << "Process: " << rank << "  time: " << (time_finish - time_start) << endl;
+
 	}
 
 	MPI_Finalize();
