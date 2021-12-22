@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 	MPI_Waitall(4, reqs, stats);
 	
 	// Prit received messages
-	cout << "Rank " << rank << ". Message from prev " << rbuf[0] << " and message from next " << rbuf[1] << endl;
+	cout << "PR: " << rank << " Previous: " << rbuf[0] << " Next: " << rbuf[1] << endl;
 	
 	// Free requests
 	MPI_Request_free(&reqs[0]);

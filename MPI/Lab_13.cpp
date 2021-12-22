@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <iostream>
 #include "mpi.h"
 
 int const N = 500;
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
 	// end of timing
 	double end_time = MPI_Wtime() - start_time;
 	// output the execution time of matrix multiplication at each process
-	cout << "Rank " << rank << ". Elapsed time is " << end_time << endl;
+	cout << "PR: " << rank << " ET: " << end_time << endl;
 
 	MPI_Finalize();
 }
