@@ -1,63 +1,78 @@
+#include <iostream>
 #include <mpi.h>
+
+#define VEC_SIZE    1000000
+
 using namespace std;
 
-int const N_TEST = 100000000;
-
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-	int rank, size;	
-    // Initialize the MPI environment
-	MPI_Init(&argc, &argv);
-    // Get the number of processes associated with the communicator
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    // Get the rank of the calling process
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
-    int dotProduct;
-    int n;
-    int *a,*b;
-
-    // In main process init n and arrays
-    if(rank == 0){
-        if (argc == 1) {
-            n = N_TEST;
-        } else {
-            n = atoi(argv[1]);
-        }
-    	a = new int[n];
-    	b = new int[n];
-        fill(a, a + n, 1);
-        fill(b, b + n, 1);
-    }
-
-    // Sednd size of arrays (n) to other processes
-    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    
-    int *va = new int[n/size]; 
-    int *vb = new int[n/size];
+    // Init MPI
+    int proc_rank, proc_num, part_size;
+    int root_rank = 0;
+    // Init arrays
+    int *vec_a, *vec_b;
     int sum = 0;
+    int global_sum = 0;
 
-    // Send parts of arrays to each processes
-	MPI_Scatter(a, n/size, MPI_INT, va, n/size, MPI_INT, 0, MPI_COMM_WORLD);
-	MPI_Scatter(b, n/size, MPI_INT, vb, n/size, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &proc_num);
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
-    // Compute dotProduct of recieved parts
-	for(int i=0; i < n/size; i++){
-		sum += va[i] * vb[i];
-	}
+    if (proc_rank == root_rank)
+    {
+        vec_a = new int[VEC_SIZE];
+        vec_b = new int[VEC_SIZE];
 
-    // Sumup all parts of sums
-	MPI_Reduce(&sum, &dotProduct, 1, MPI_INT, MPI_SUM, 0,MPI_COMM_WORLD);
+        // Split arrays between processes as equally as possbile
+        part_size = VEC_SIZE / proc_num;
 
-    // Clean memmory and print output
-    delete[] va;
-    delete[] vb;
-    if (rank == 0) {
-        delete[] a;
-        delete[] b;
-        cout << "Dot Product: " << dotProduct << endl;
+        for (int i = 0; i < VEC_SIZE; i++)
+        {
+            vec_b[i] = vec_a[i] = (i / part_size) + 1; // Set 1 to first part, 2 to second, etc
+        }
+
+        cout << "Two vectors of " << VEC_SIZE << " elements were generated and divided to " <<
+        proc_num << " parts of " << part_size << " elements" << endl;
     }
 
+    // Send and receive size of transfering part of vector
+    MPI_Bcast(&part_size, 1, MPI_INT, root_rank, MPI_COMM_WORLD);
+    // Allocate space for parts of vectors
+    int *vec_a_part = new int[part_size];
+    int *vec_b_part = new int[part_size];
+
+    // Send by root proc parts of first vector to rest procs
+    MPI_Scatter(vec_a, part_size, MPI_INT, vec_a_part, part_size, MPI_INT, root_rank, MPI_COMM_WORLD);
+    // Send by root proc parts of second vector to rest procs
+    MPI_Scatter(vec_b, part_size, MPI_INT, vec_b_part, part_size, MPI_INT, root_rank, MPI_COMM_WORLD);
+
+    // Main routine
+    for (int i = 0; i < part_size; i++)
+    {
+        sum += vec_a_part[i] * vec_b_part[i];
+    }
+
+    // Gather sum in root process and output result
+    MPI_Reduce(&sum, &global_sum, 1, MPI_INT, MPI_SUM, root_rank, MPI_COMM_WORLD);
+    if (proc_rank == root_rank)
+    {
+        cout << "Root process: " << proc_rank << ": local sum = " << sum  << endl;
+        cout << "Root process: " << proc_rank << " resulting SUM = " << global_sum << endl;
+        // Release allocated memory
+        delete vec_a;
+        delete vec_b;
+    }
+    else
+    {
+        cout << "Process: " << proc_rank << ": local sum = " << sum  << endl;
+    }
+
+    // Delete allocated memory
+    delete vec_a_part;
+    delete vec_b_part;
+
+    // Finalize MPI
     MPI_Finalize();
-	return 0;
+    return 0;
 }

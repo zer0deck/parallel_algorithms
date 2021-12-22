@@ -1,4 +1,7 @@
 #include <mpi.h>
+#include <stdlib.h>
+#include <iostream>
+#include <cstdlib>
 using namespace std;
 
 // Works for 2 and 4 processes. I didn't want to work with the leftovers from the process splits.
