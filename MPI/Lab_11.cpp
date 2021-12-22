@@ -23,8 +23,7 @@ int main(int argc, char **argv)
 
 	//Your code here.
 	//Here you need to display the number of the current process, and what it receives from the previous and next processes.
-	cout << "Rank " << rank << ". Message from prev process is " << buf[0] 
-	<< ". Message from next process is " << buf[1] << endl;
+	cout << "PR: " << rank << " Previous: " << buf[0] << " Next: " << buf[1] << endl;
 
 	MPI_Finalize();
 }
