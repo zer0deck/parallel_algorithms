@@ -69,8 +69,8 @@ int main(int argc, char **argv)
     }
 
     // Delete allocated memory
-    delete vec_a_part;
-    delete vec_b_part;
+    delete[] vec_a_part;
+    delete[] vec_b_part;
 
     // Finalize MPI
     MPI_Finalize();
