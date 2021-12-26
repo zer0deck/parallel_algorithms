@@ -7,7 +7,7 @@
 #define MAX_THREADS_NUM         10
 
 using namespace std;
-using namespace std::chrono;
+using namespace chrono;
 
 // function to generate random matrices
 double** generate_random_matrix(int rows, int columns)
@@ -96,8 +96,10 @@ int main(int argc, char** argv)
 
         if (rows_num * cols_num <= 25)
         {
-            cout << "Matrix output:" << endl;
+            cout << "Print first matrix" << endl;
+            cout << "-------------------------------------------------------------------" << endl;
             print_matrix(matrix_a, rows_num, cols_num);
+            cout << "-------------------------------------------------------------------" << endl;
         }
 
         // generate matrix B
@@ -105,7 +107,10 @@ int main(int argc, char** argv)
 
         if (rows_num * cols_num <= 25)
         {
+            cout << "Print second matrix" << endl;
+            cout << "-------------------------------------------------------------------" << endl;
             print_matrix(matrix_b, cols_num, rows_num);
+            cout << "-------------------------------------------------------------------" << endl;
         }
 
         // generate matrix C with zero values (it size becomes rows*rows)
@@ -122,9 +127,9 @@ int main(int argc, char** argv)
             #pragma omp parallel for num_threads(thread_num)
             for (int i = 0; i < rows_num; i++)
             {
-                for (int k = 0; k < rows_num; k++)
+                for (int j = 0; j < rows_num; j++)
                 {
-                    for (int j = 0; j < cols_num; j++)
+                    for (int k = 0; k < cols_num; k++)
                     {
                         matrix_c[i][j] += matrix_a[i][k] * matrix_b[k][j];
                     }
@@ -137,17 +142,23 @@ int main(int argc, char** argv)
 
             if (thread_num == MAX_THREADS_NUM)
             {
-                print_matrix(matrix_c, rows_num, rows_num);
+                if (rows_num * cols_num <= 25)
+                {
+                    cout << "Print result matrix" << endl;
+                    cout << "-------------------------------------------------------------------" << endl;
+                    print_matrix(matrix_c, rows_num, rows_num);
+                    cout << "-------------------------------------------------------------------" << endl;
+                }
             }
 
             release_matrix(matrix_c, rows_num, rows_num);
         }
-        printf("i-j-k order");
+        printf("I-J-K ORDER");
         cout << endl;
 
         for (int i = 0; i < MAX_THREADS_NUM; i++)
         {
-            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[i])/float(sum_time));
+            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[0])/float(time_array[i]));
         }
         cout << endl;
 
@@ -177,12 +188,12 @@ int main(int argc, char** argv)
 
             release_matrix(matrix_c, rows_num, rows_num);
         }
-        printf("i-k-j order");
+        printf("I-K-J ORDER");
         cout << endl;
 
         for (int i = 0; i < MAX_THREADS_NUM; i++)
         {
-            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[i])/float(sum_time));
+            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[0])/float(time_array[i]));
         }
         cout << endl;
 
@@ -213,11 +224,11 @@ int main(int argc, char** argv)
             release_matrix(matrix_c, rows_num, rows_num);
 
         }
-        printf("j-k-i order");
+        printf("J-K-I ORDER");
         cout << endl;
         for (int i = 0; i < MAX_THREADS_NUM; i++)
         {
-            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[i])/float(sum_time));
+            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[0])/float(time_array[i]));
         }
         cout << endl;
 
@@ -246,11 +257,11 @@ int main(int argc, char** argv)
 
             release_matrix(matrix_c, rows_num, rows_num);
         }
-        printf("j-i-k order");
+        printf("J-I-K ORDER");
         cout << endl;
         for (int i = 0; i < MAX_THREADS_NUM; i++)
         {
-            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[i])/float(sum_time));
+            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[0])/float(time_array[i]));
         }
         cout << endl;
 
@@ -280,11 +291,11 @@ int main(int argc, char** argv)
 
             release_matrix(matrix_c, rows_num, rows_num);
         }
-        printf("k-i-j order");
+        printf("K-I-J ORDER");
         cout << endl;
         for (int i = 0; i < MAX_THREADS_NUM; i++)
         {
-            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[i])/float(sum_time));
+            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[0])/float(time_array[i]));
         }
         cout << endl;
 
@@ -314,13 +325,14 @@ int main(int argc, char** argv)
 
             release_matrix(matrix_c, rows_num, rows_num);
         }
-        printf("k-j-i order");
+        printf("K-J-I ORDER");
         cout << endl;
         for (int i = 0; i < MAX_THREADS_NUM; i++)
         {
-            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[i])/float(sum_time));
+            printf("Number of threads: %d, Time (in microseconds): %lld, Efficiency: %f\n", i + 1, time_array[i], float(time_array[0])/float(time_array[i]));
         }
 
+        // Free allocated memory
         release_matrix(matrix_a, rows_num, cols_num);
         release_matrix(matrix_b, cols_num, rows_num);
 
